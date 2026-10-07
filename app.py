@@ -23,6 +23,8 @@ from cfa.v6 import AuditConfig, AuditResult, audit_v6
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.path.join(ROOT, "results")
+METHOD_COLOR = alt.Color("method:N", scale=alt.Scale(domain=["V6", "V5"], range=["#2a78d6", "#eb6834"]),
+                         legend=alt.Legend(orient="bottom", title=None))
 
 st.set_page_config(page_title="Candidate Feature Auditor", page_icon="🔎", layout="wide")
 
@@ -462,17 +464,26 @@ def page_calibration():
             clean = cal[cal["endpoint"] == "clean_alarm"]
             for m, g in clean.groupby("method"):
                 st.write(f"**{m}**: {int(g['passed'].sum())}/{len(g)} clean conditions pass the gate")
+            cap = 0.12
+            clean = clean.assign(rate_c=clean["rate"].clip(upper=cap), lo_c=clean["ci_low"].clip(upper=cap),
+                                 hi_c=clean["ci_high"].clip(upper=cap),
+                                 note=np.where(clean["ci_high"] > cap, clean["rate"].map(lambda r: f"→ {r:.1%}"), ""))
+            xs = alt.X("rate_c:Q", title="Clean alarm rate (exact 95% CI)", axis=alt.Axis(format="%"),
+                       scale=alt.Scale(domain=[0, cap]))
             base = alt.Chart(clean).encode(y=alt.Y("condition:N", sort=None, title=None),
-                                           color=alt.Color("method:N", legend=alt.Legend(orient="bottom")),
-                                           yOffset="method:N")
-            pts = base.mark_point(filled=True).encode(x=alt.X("rate:Q", title="Clean alarm rate (exact 95% CI)",
-                                                              axis=alt.Axis(format="%")),
-                                                      tooltip=["condition", "method", "count", "runs",
-                                                               alt.Tooltip("ci_high:Q", format=".2%")])
-            err = base.mark_errorbar().encode(x=alt.X("ci_low:Q", title="Clean alarm rate (exact 95% CI)", axis=alt.Axis(format="%")), x2="ci_high:Q")
-            rule = alt.Chart(pd.DataFrame({"x": [0.05]})).mark_rule(color="#e4572e", strokeDash=[4, 4]).encode(x="x:Q")
-            st.altair_chart((err + pts + rule).properties(height=34 * len(clean["condition"].unique()) + 100),
+                                           color=METHOD_COLOR, yOffset="method:N")
+            pts = base.mark_point(filled=True, size=50).encode(
+                x=xs, tooltip=["condition", "method", "count", "runs", alt.Tooltip("rate:Q", format=".2%"),
+                               alt.Tooltip("ci_high:Q", title="upper bound", format=".2%")])
+            err = base.mark_errorbar(thickness=2).encode(x=alt.X("lo_c:Q", title="Clean alarm rate (exact 95% CI)", scale=alt.Scale(domain=[0, cap])),
+                                                         x2="hi_c:Q")
+            note = base.mark_text(align="right", dx=-4, dy=-9, fontSize=11, fontWeight="bold").encode(
+                x=alt.X("hi_c:Q", scale=alt.Scale(domain=[0, cap])), text="note:N")
+            rule = alt.Chart(pd.DataFrame({"x": [0.05]})).mark_rule(strokeDash=[4, 4]).encode(x="x:Q")
+            st.altair_chart((err + pts + note + rule).properties(height=34 * len(clean["condition"].unique()) + 100),
                             use_container_width=True)
+            st.caption(f"Dashed line = 5% gate on the upper bound. Axis capped at {cap:.0%}; arrows give the "
+                       "observed rate for conditions beyond the cap.")
             st.dataframe(cal, hide_index=True, width="stretch")
         ppath = os.path.join(RESULTS, "power_summary.csv")
         if os.path.exists(ppath):
@@ -480,7 +491,7 @@ def page_calibration():
             st.markdown("**Power study** (exploratory: recall of the corrupted block)")
             ch = alt.Chart(pw).mark_bar().encode(
                 x=alt.X("rate:Q", title="Target recall", axis=alt.Axis(format="%"), scale=alt.Scale(domain=[0, 1])),
-                y=alt.Y("condition:N", sort=None, title=None), color="method:N", yOffset="method:N",
+                y=alt.Y("condition:N", sort=None, title=None), color=METHOD_COLOR, yOffset="method:N",
                 tooltip=["condition", "method", "count", "runs", alt.Tooltip("off_target_rate:Q", format=".1%")])
             rule = alt.Chart(pd.DataFrame({"x": [0.8]})).mark_rule(strokeDash=[4, 4]).encode(x="x:Q")
             st.altair_chart((ch + rule).properties(height=40 * len(pw["condition"].unique()) + 100),
