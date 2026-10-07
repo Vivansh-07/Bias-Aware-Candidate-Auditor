@@ -1,0 +1,34 @@
+{
+  "study": "calibration",
+  "reps": 500,
+  "methods": [
+    "v6",
+    "v5"
+  ],
+  "conditions": [
+    "default",
+    "proxy_noise_0",
+    "proxy_noise_30",
+    "proxy_noise_50",
+    "n_audit_1000",
+    "n_audit_10000",
+    "trusted_833",
+    "trusted_3333",
+    "prevalence_10",
+    "prevalence_50",
+    "noise_cols_20",
+    "nonlinear",
+    "missing_30",
+    "correlated_nuisance",
+    "shift_0.75",
+    "shift_1.50",
+    "shift_1.50_nonlinear",
+    "shift_1.50_corr_nuisance",
+    "shift_1.50_noise_20",
+    "shift_1.50_prev_10",
+    "random_labels"
+  ],
+  "B": 1999,
+  "datasets": 10500,
+  "elapsed_s": 1007.5
+}

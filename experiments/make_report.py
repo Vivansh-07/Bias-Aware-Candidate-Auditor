@@ -87,20 +87,31 @@ def fig_power(pw: pd.DataFrame) -> str:
 
 def fig_realdata(rd: pd.DataFrame, dataset: str) -> str:
     d = rd[rd["dataset"] == dataset].copy()
-    conds = list(dict.fromkeys(d["condition"]))
-    fig, ax = plt.subplots(figsize=(6.2, 0.36 * len(conds) + 0.9))
-    for m in ["V6", "V5"]:
-        g = d[d["method"] == m].set_index("condition").loc[conds]
-        y = np.arange(len(conds)) + (-0.18 if m == "V6" else 0.18)
-        ax.barh(y, g["rate"], height=0.34, color=COLORS[m], label=m)
-        ax.errorbar(g["rate"], y, xerr=[g["rate"] - g["ci_low"], g["ci_high"] - g["rate"]],
-                    fmt="none", ecolor=INK, elinewidth=0.8)
-    ax.set_yticks(np.arange(len(conds)), conds)
-    ax.invert_yaxis()
-    ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
-    ax.set_xlabel("Alarm rate (clean / shift rows) or target recall (corrupt rows), 95% CI")
-    ax.grid(axis="y", visible=False)
-    ax.legend(loc="lower right")
+    parts = [("clean_alarm", "Clean / shift: alarm rate (gate 5%)", 0.05, ""),
+             ("target_recall", "Corruption: recall (target 80%)", 0.80, "")]
+    sizes = [max(1, d[d["endpoint"] == e]["condition"].nunique()) for e, *_ in parts]
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 0.42 * max(sizes) + 1.1))
+    for ax, (endpoint, title, line, line_label) in zip(axes, parts):
+        sub = d[d["endpoint"] == endpoint]
+        conds = list(dict.fromkeys(sub["condition"]))
+        for m in ["V6", "V5"]:
+            g = sub[sub["method"] == m].set_index("condition").loc[conds]
+            y = np.arange(len(conds)) + (-0.19 if m == "V6" else 0.19)
+            ax.barh(y, g["rate"], height=0.36, color=COLORS[m], label=m)
+            ax.errorbar(g["rate"], y, xerr=[g["rate"] - g["ci_low"], g["ci_high"] - g["rate"]],
+                        fmt="none", ecolor=INK, elinewidth=0.8, capsize=2)
+        ax.axvline(line, color=INK, lw=1, ls=(0, (4, 3)))
+        ax.set_yticks(np.arange(len(conds)), conds)
+        ax.invert_yaxis()
+        ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
+        ax.set_title(title, fontsize=9, color=INK)
+        ax.set_xlabel("rate with exact 95% CI")
+        ax.grid(axis="y", visible=False)
+        if endpoint == "target_recall":
+            ax.set_xlim(0, 1)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, bbox_to_anchor=(0.5, -0.06))
+    fig.tight_layout()
     path = os.path.join(FIG, f"fig_realdata_{dataset.replace(' ', '_').lower()}.png")
     fig.savefig(path)
     plt.close(fig)
@@ -126,7 +137,9 @@ def fig_mitigation(ms: pd.DataFrame, dataset: str, cond: str) -> str | None:
         ax.grid(axis="y", visible=False)
     axes[0].set_yticks(np.arange(len(order)), order)
     axes[0].invert_yaxis()
-    axes[1].legend(loc="lower right", fontsize=8)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=2, bbox_to_anchor=(0.6, -0.08))
+    fig.tight_layout()
     path = os.path.join(FIG, f"fig_mitigation_{dataset.replace(' ', '_').lower()}_{cond}.png")
     fig.savefig(path)
     plt.close(fig)
@@ -151,6 +164,14 @@ def main():
            "These are results of this repository's independent reimplementation of the V5 and V6 "
            "auditors from the project's written method; they are **not** the archived V1–V6 study "
            "numbers and should be reported as a separate study.",
+           "",
+           "**Protocol notes (for honest reporting).** The V5/V6 code, gates and condition list were "
+           "written before the main runs. A 100-repetition development pilot on four conditions (default, "
+           "shift 1.50, nonlinear, shift 1.50 + nonlinear) was run first. After the pilot, two trusted-sample-size "
+           "conditions (833 and 3,333) were added, and no auditor code was changed. Seeds are deterministic "
+           "(`experiments/run_study.py`), so the pilot reused some main-study streams for those conditions. "
+           "The condition set was chosen by this project, and these runs are not a locked, independent "
+           "confirmation study.",
            ""]
     if cal is not None:
         meta = json.load(open(os.path.join(RES, "calibration_meta.json")))

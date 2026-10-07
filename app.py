@@ -497,6 +497,24 @@ def page_calibration():
             st.altair_chart((ch + rule).properties(height=40 * len(pw["condition"].unique()) + 100),
                             use_container_width=True)
             st.dataframe(pw, hide_index=True, width="stretch")
+        rpath = os.path.join(RESULTS, "realdata_summary.csv")
+        if os.path.exists(rpath):
+            rd = pd.read_csv(rpath)
+            rd["label"] = rd["dataset"] + " · " + rd["condition"]
+            st.markdown("**Real-data transfer** (record-disjoint random splits; clean/shift rows = alarm rate, "
+                        "corrupt rows = recall of the corrupted attribute)")
+            ch = alt.Chart(rd).mark_bar().encode(
+                x=alt.X("rate:Q", title="Rate", axis=alt.Axis(format="%"), scale=alt.Scale(domain=[0, 1])),
+                y=alt.Y("label:N", sort=None, title=None), color=METHOD_COLOR, yOffset="method:N",
+                tooltip=["dataset", "condition", "method", "endpoint", "count", "runs",
+                         alt.Tooltip("ci_high:Q", title="upper bound", format=".2%")])
+            st.altair_chart(ch.properties(height=40 * len(rd["label"].unique()) + 100), use_container_width=True)
+            st.dataframe(rd.drop(columns=["label"]), hide_index=True, width="stretch")
+        mpath = os.path.join(RESULTS, "mitigation_summary.csv")
+        if os.path.exists(mpath):
+            ms = pd.read_csv(mpath)
+            st.markdown("**Audit-guided mitigation** (means over splits where V6 flagged; clean test labels)")
+            st.dataframe(ms.round(3), hide_index=True, width="stretch")
 
 
 def page_method():

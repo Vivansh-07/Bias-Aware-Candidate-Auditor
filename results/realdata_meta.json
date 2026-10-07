@@ -1,0 +1,23 @@
+{
+  "reps": 200,
+  "B": 1999,
+  "splits": 2200,
+  "elapsed_s": 858.8,
+  "conditions": {
+    "COMPAS": [
+      "clean",
+      "shift_age_1.0",
+      "shift_age_1.5",
+      "corrupt_10",
+      "corrupt_20",
+      "corrupt_30",
+      "corrupt_30_shift_1.0"
+    ],
+    "German Credit": [
+      "clean",
+      "shift_age_1.0",
+      "corrupt_30",
+      "corrupt_50"
+    ]
+  }
+}

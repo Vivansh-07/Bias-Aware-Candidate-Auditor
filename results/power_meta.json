@@ -1,0 +1,28 @@
+{
+  "study": "power",
+  "reps": 500,
+  "methods": [
+    "v6",
+    "v5"
+  ],
+  "conditions": [
+    "c10_noise0",
+    "c10_noise10",
+    "c10_noise30",
+    "c20_noise0",
+    "c20_noise10",
+    "c20_noise30",
+    "c30_noise0",
+    "c30_noise10",
+    "c30_noise30",
+    "c40_noise0",
+    "c40_noise10",
+    "c40_noise30",
+    "c30_shift150",
+    "c30_n10000",
+    "c20_n10000"
+  ],
+  "B": 1999,
+  "datasets": 7500,
+  "elapsed_s": 797.3
+}

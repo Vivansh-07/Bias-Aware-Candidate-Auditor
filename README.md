@@ -128,9 +128,47 @@ python experiments/run_realdata.py --reps 200
 python experiments/make_report.py
 ```
 
-## Key results
+## Key results (this reimplementation)
 
-See [`docs/RESULTS.md`](docs/RESULTS.md).
+Full tables and figures: [`docs/RESULTS.md`](docs/RESULTS.md). All numbers come from this
+repository's own runs. Methods were applied to the same datasets (paired), and every rate carries
+an exact Clopper–Pearson 95% interval.
+
+**1. Calibration: 10,500 synthetic datasets, 21 conditions × 500.**
+V6 passed **20/20 clean conditions** (alarm rates 0.6–3.0%, largest upper bound 4.90% in the
+833-trusted-record condition) and the random-label control (495/500 abstentions). V5 passed 18/20.
+It failed the **clean shift + nonlinear label rule** condition with **115/500 alarms (23.0%)**,
+where V6 had 12/500 (2.4%), and the small-trusted-sample condition (upper bound 5.14%).
+
+![calibration](docs/figures/fig_calibration.png)
+
+**2. Power: 7,500 datasets.** This is the first V6 power study; the archived V6 stopped before
+power testing. Recall of the corrupted block at n_audit = 5,000:
+
+| corruption | 10% | 20% | 30% | 40% |
+|---|---|---|---|---|
+| V6 recall | 3–5% | 43–47% | 88–92% | ≥ 99.6% |
+
+The ≥ 80% target is met at 30–40% corruption but **not at 20%**. At 20% it needs
+n_audit = 10,000 (83.8%). Under a population shift with 30% corruption, V6 recall is 81.6% versus
+93.4% for V5: V6 gives up some sensitivity to stay calibrated.
+
+**3. Real-data transfer: 2,200 record-disjoint splits of COMPAS and German Credit.**
+On COMPAS with 30% injected corruption (non-recidivist African-American defendants relabelled
+as recidivists), V6 recovered `race` in **59.5%** of splits. V5 recovered it in **0.5%**, because
+V5's support rule requires every race group (including the rare merged Asian/Native-American
+group) to have ≥ 10 records per source in each risk stratum, so `race` is always untestable for V5.
+Clean-data alarms on COMPAS were 2.5% for V6 (5/200; upper bound 5.74%, so this 200-split run does
+**not** demonstrate the < 5% gate). German Credit (1,000 rows) is mostly too small: V6 recall is
+4% at 30% corruption and 35.5% at 50%.
+
+**4. Audit-guided mitigation (COMPAS, 30% corruption, splits where V6 flagged).** Reweighting
+cut the logistic model's over-prediction for the corrupted group from **+14.3 pp to +1.6 pp**
+(clean-label oracle: +0.2 pp). The equalized-odds gap fell from 0.65 to 0.39, and AUC *rose* by
+0.016. The report's acceptance criteria (EO gap down, AUC loss ≤ 0.02, ESS ≥ 70%) were met in
+97.5% (LR) and 98.4% (RF) of flagged splits.
+
+![mitigation](docs/figures/fig_mitigation_compas_corrupt_30.png)
 
 ## Limits (read before presenting)
 

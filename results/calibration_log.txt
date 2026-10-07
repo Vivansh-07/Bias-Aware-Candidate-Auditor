@@ -1,0 +1,70 @@
+[Parallel(n_jobs=10)]: Using backend LokyBackend with 10 concurrent workers.
+[Parallel(n_jobs=10)]: Done  52 tasks      | elapsed:   10.0s
+[Parallel(n_jobs=10)]: Done 142 tasks      | elapsed:   14.5s
+[Parallel(n_jobs=10)]: Done 268 tasks      | elapsed:   20.8s
+[Parallel(n_jobs=10)]: Done 430 tasks      | elapsed:   29.1s
+[Parallel(n_jobs=10)]: Done 628 tasks      | elapsed:   39.4s
+[Parallel(n_jobs=10)]: Done 862 tasks      | elapsed:   51.2s
+[Parallel(n_jobs=10)]: Done 1132 tasks      | elapsed:  1.1min
+[Parallel(n_jobs=10)]: Done 1438 tasks      | elapsed:  1.4min
+[Parallel(n_jobs=10)]: Done 1780 tasks      | elapsed:  1.7min
+[Parallel(n_jobs=10)]: Done 2158 tasks      | elapsed:  2.0min
+[Parallel(n_jobs=10)]: Done 2572 tasks      | elapsed:  2.4min
+[Parallel(n_jobs=10)]: Done 3022 tasks      | elapsed:  3.5min
+[Parallel(n_jobs=10)]: Done 3508 tasks      | elapsed:  3.9min
+[Parallel(n_jobs=10)]: Done 4030 tasks      | elapsed:  4.4min
+[Parallel(n_jobs=10)]: Done 4588 tasks      | elapsed:  4.9min
+[Parallel(n_jobs=10)]: Done 5182 tasks      | elapsed:  6.7min
+[Parallel(n_jobs=10)]: Done 5812 tasks      | elapsed:  8.9min
+[Parallel(n_jobs=10)]: Done 6478 tasks      | elapsed:  9.5min
+[Parallel(n_jobs=10)]: Done 7180 tasks      | elapsed: 10.2min
+[Parallel(n_jobs=10)]: Done 7918 tasks      | elapsed: 11.5min
+[Parallel(n_jobs=10)]: Done 8692 tasks      | elapsed: 12.5min
+[Parallel(n_jobs=10)]: Done 9502 tasks      | elapsed: 15.6min
+[Parallel(n_jobs=10)]: Done 10348 tasks      | elapsed: 16.6min
+[Parallel(n_jobs=10)]: Done 10500 out of 10500 | elapsed: 16.8min finished
+calibration: 21 conditions x 500 reps x ['v6', 'v5'] -> 10500 datasets
+               condition method    endpoint  count  runs  rate   ci_low  ci_high  passed
+                 default     V6 clean_alarm      9   500 0.018 0.008263 0.033894    True
+                 default     V5 clean_alarm     10   500 0.020 0.009631 0.036472    True
+           proxy_noise_0     V6 clean_alarm      8   500 0.016 0.006932 0.031282    True
+           proxy_noise_0     V5 clean_alarm      6   500 0.012 0.004416 0.025935    True
+          proxy_noise_30     V6 clean_alarm      9   500 0.018 0.008263 0.033894    True
+          proxy_noise_30     V5 clean_alarm      7   500 0.014 0.005647 0.028632    True
+          proxy_noise_50     V6 clean_alarm     10   500 0.020 0.009631 0.036472    True
+          proxy_noise_50     V5 clean_alarm      7   500 0.014 0.005647 0.028632    True
+            n_audit_1000     V6 clean_alarm      8   500 0.016 0.006932 0.031282    True
+            n_audit_1000     V5 clean_alarm      8   500 0.016 0.006932 0.031282    True
+           n_audit_10000     V6 clean_alarm     10   500 0.020 0.009631 0.036472    True
+           n_audit_10000     V5 clean_alarm      9   500 0.018 0.008263 0.033894    True
+             trusted_833     V6 clean_alarm     15   500 0.030 0.016886 0.048998    True
+             trusted_833     V5 clean_alarm     16   500 0.032 0.018399 0.051447   False
+            trusted_3333     V6 clean_alarm     11   500 0.022 0.011032 0.039023    True
+            trusted_3333     V5 clean_alarm     12   500 0.024 0.012461 0.041548    True
+           prevalence_10     V6 clean_alarm      8   500 0.016 0.006932 0.031282    True
+           prevalence_10     V5 clean_alarm      5   500 0.010 0.003255 0.023181    True
+           prevalence_50     V6 clean_alarm      5   500 0.010 0.003255 0.023181    True
+           prevalence_50     V5 clean_alarm      9   500 0.018 0.008263 0.033894    True
+           noise_cols_20     V6 clean_alarm      6   500 0.012 0.004416 0.025935    True
+           noise_cols_20     V5 clean_alarm      0   500 0.000 0.000000 0.007351    True
+               nonlinear     V6 clean_alarm     11   500 0.022 0.011032 0.039023    True
+               nonlinear     V5 clean_alarm     10   500 0.020 0.009631 0.036472    True
+              missing_30     V6 clean_alarm      3   500 0.006 0.001239 0.017434    True
+              missing_30     V5 clean_alarm      5   500 0.010 0.003255 0.023181    True
+     correlated_nuisance     V6 clean_alarm      8   500 0.016 0.006932 0.031282    True
+     correlated_nuisance     V5 clean_alarm     11   500 0.022 0.011032 0.039023    True
+              shift_0.75     V6 clean_alarm      8   500 0.016 0.006932 0.031282    True
+              shift_0.75     V5 clean_alarm     13   500 0.026 0.013915 0.044050    True
+              shift_1.50     V6 clean_alarm      5   500 0.010 0.003255 0.023181    True
+              shift_1.50     V5 clean_alarm     10   500 0.020 0.009631 0.036472    True
+    shift_1.50_nonlinear     V6 clean_alarm     12   500 0.024 0.012461 0.041548    True
+    shift_1.50_nonlinear     V5 clean_alarm    115   500 0.230 0.193802 0.269425   False
+shift_1.50_corr_nuisance     V6 clean_alarm      7   500 0.014 0.005647 0.028632    True
+shift_1.50_corr_nuisance     V5 clean_alarm     15   500 0.030 0.016886 0.048998    True
+     shift_1.50_noise_20     V6 clean_alarm      7   500 0.014 0.005647 0.028632    True
+     shift_1.50_noise_20     V5 clean_alarm      1   500 0.002 0.000051 0.011092    True
+      shift_1.50_prev_10     V6 clean_alarm      5   500 0.010 0.003255 0.023181    True
+      shift_1.50_prev_10     V5 clean_alarm      9   500 0.018 0.008263 0.033894    True
+           random_labels     V6  abstention    495   500 0.990 0.976819 0.996745    True
+           random_labels     V5  abstention    496   500 0.992 0.979644 0.997816    True
+{'study': 'calibration', 'reps': 500, 'methods': ['v6', 'v5'], 'conditions': ['default', 'proxy_noise_0', 'proxy_noise_30', 'proxy_noise_50', 'n_audit_1000', 'n_audit_10000', 'trusted_833', 'trusted_3333', 'prevalence_10', 'prevalence_50', 'noise_cols_20', 'nonlinear', 'missing_30', 'correlated_nuisance', 'shift_0.75', 'shift_1.50', 'shift_1.50_nonlinear', 'shift_1.50_corr_nuisance', 'shift_1.50_noise_20', 'shift_1.50_prev_10', 'random_labels'], 'B': 1999, 'datasets': 10500, 'elapsed_s': 1007.5}
