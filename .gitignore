@@ -7,3 +7,12 @@ venv/
 .ipynb_checkpoints/
 .streamlit/secrets.toml
 .DS_Store
+
+# LaTeX build files
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.synctex.gz
+paper/paper_overleaf.zip
