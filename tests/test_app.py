@@ -58,6 +58,17 @@ def test_selection_and_results_survive_page_switch():
     assert not any("Session State API" in w.value for w in at.warning)
 
 
+@pytest.mark.parametrize("page,key", [("🧪 Synthetic Lab", "syn"), ("🌍 Real-Data Audit", "real")])
+def test_results_saved_by_an_older_app_version_do_not_crash(page, key):
+    # A browser session that stays open while a new version is deployed keeps results saved without "settings".
+    at = AppTest.from_file(APP, default_timeout=120)
+    at.session_state[key] = {"r6": None}
+    at.run()
+    at.sidebar.radio[0].set_value(page).run()
+    assert not at.exception, [e.message for e in at.exception]
+    assert any("Run audit" in i.value for i in at.info)
+
+
 def test_real_data_results_hidden_once_settings_change():
     at = AppTest.from_file(APP, default_timeout=120)
     at.run()

@@ -274,7 +274,7 @@ def page_synthetic():
     if "syn" not in st.session_state:
         st.stop()
     S = st.session_state["syn"]
-    if S["settings"] != settings:
+    if S.get("settings") != settings:
         st.info("The settings above changed since the last run. Press **▶ Run audit** to audit them.")
         st.stop()
     df, feats, r6, r5, sc = S["df"], S["feats"], S["r6"], S["r5"], S["sc"]
@@ -393,7 +393,7 @@ def page_real():
     if "real" not in st.session_state:
         st.stop()
     R = st.session_state["real"]
-    if R["settings"] != settings:
+    if R.get("settings") != settings:
         st.info("The settings above changed since the last run. Press **▶ Run audit** to audit them.")
         st.stop()
     data, test, feats, r6, r5 = R["data"], R["test"], R["feats"], R["r6"], R["r5"]
