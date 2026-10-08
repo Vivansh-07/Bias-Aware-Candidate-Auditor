@@ -11,6 +11,10 @@ dataset compared with a small trusted reference. It **flags** a block only when 
 survives multiple-testing correction, and otherwise **abstains**. The auditor is never told which
 columns are sensitive.
 
+**Try it online:** <https://bias-aware-candidate-auditor.streamlit.app>. No installation is
+needed. If nobody has used the app for a while, Streamlit puts it to sleep; click the wake-up
+button and give it about a minute.
+
 > This repository rebuilds the V5 and V6 auditors from the method described in the project's
 > report and IEEE manuscript (V1–V6). It is an independent reimplementation. Its numbers come
 > from its own simulation studies (see [`docs/RESULTS.md`](docs/RESULTS.md)) and are reported
@@ -23,7 +27,7 @@ columns are sensitive.
 ```bash
 pip install -r requirements.txt
 streamlit run app.py          # web app at http://localhost:8501
-pytest                        # 31 tests (library + headless app)
+pytest                        # 35 tests (library + headless app)
 ```
 
 Command-line auditing:
@@ -115,7 +119,7 @@ experiments/
   make_report.py           figures + docs/RESULTS.md
 results/                   saved study outputs (per-run records and summaries)
 docs/RESULTS.md            generated results with figures
-tests/                     31 pytest checks (CI numbers from the report, auditors, headless app)
+tests/                     35 pytest checks (CI numbers from the report, auditors, headless app)
 data/                      compas_clean.csv, german_credit.csv, heart_disease.csv
 ```
 
