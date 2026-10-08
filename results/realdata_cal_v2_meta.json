@@ -1,0 +1,9 @@
+{
+  "protocol": "experiments/protocols/realdata_calibration_v2.md",
+  "code_commit": "4ae16e3d286f52feec6fe5253b5a67afc914af25",
+  "reps": 1000,
+  "B": 1999,
+  "splits": 5000,
+  "elapsed_s": 1117.5,
+  "v6_gate_all_conditions": true
+}

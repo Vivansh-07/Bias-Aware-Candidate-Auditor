@@ -221,6 +221,19 @@ def main():
             t["95% CI"] = [f"[{pct(a)}, {pct(b)}]" for a, b in zip(rd.loc[t.index, "ci_low"], rd.loc[t.index, "ci_high"])]
             out += [f"### {ds}", "", f"![{ds}](figures/fig_realdata_{slug}.png)", "",
                     md_table(t[["condition", "method", "endpoint", "count", "runs", "rate", "95% CI"]]), ""]
+    v2 = _read("realdata_cal_v2_summary.csv")
+    if v2 is not None:
+        meta = json.load(open(os.path.join(RES, "realdata_cal_v2_meta.json")))
+        t = v2.copy()
+        t["rate"] = t["rate"].map(pct)
+        t["95% CI"] = [f"[{pct(a)}, {pct(b)}]" for a, b in zip(v2["ci_low"], v2["ci_high"])]
+        t["gate"] = t["passed"].map({True: "pass", False: "FAIL"})
+        t["McNemar p"] = v2["p_mcnemar"].map(lambda p: f"{p:.3f}")
+        out += ["### Pre-registered real-data calibration (v2)", "",
+                f"Protocol `{meta['protocol']}` was committed before the run (code commit "
+                f"`{meta['code_commit'][:8]}`). {meta['splits']:,} fresh splits, {meta['reps']} per condition. "
+                f"V6 passes the gate in every condition: **{meta['v6_gate_all_conditions']}**.", "",
+                md_table(t[["dataset", "condition", "method", "alarms", "runs", "rate", "95% CI", "gate", "McNemar p"]]), ""]
     if ms is not None and not ms.empty:
         out += ["## 4. Audit-guided mitigation (only in splits where V6 flagged)", "",
                 "Means over flagged splits; fairness measured on clean held-out test labels for the corrupted "

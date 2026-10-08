@@ -139,6 +139,23 @@ Recall = share of datasets in which the block containing the injected group `a` 
 | corrupt_50 | V6 | target_recall | 71 | 200 | 35.50% | [28.88%, 42.56%] |
 | corrupt_50 | V5 | target_recall | 0 | 200 | 0.00% | [0.00%, 1.83%] |
 
+### Pre-registered real-data calibration (v2)
+
+Protocol `experiments/protocols/realdata_calibration_v2.md` was committed before the run (code commit `4ae16e3d`). 5,000 fresh splits, 1000 per condition. V6 passes the gate in every condition: **True**.
+
+| dataset | condition | method | alarms | runs | rate | 95% CI | gate | McNemar p |
+|---|---|---|---|---|---|---|---|---|
+| COMPAS | clean | V6 | 21 | 1000 | 2.10% | [1.30%, 3.19%] | pass | 0.012 |
+| COMPAS | clean | V5 | 9 | 1000 | 0.90% | [0.41%, 1.70%] | pass | 0.012 |
+| COMPAS | shift_age_1.0 | V6 | 18 | 1000 | 1.80% | [1.07%, 2.83%] | pass | 0.021 |
+| COMPAS | shift_age_1.0 | V5 | 8 | 1000 | 0.80% | [0.35%, 1.57%] | pass | 0.021 |
+| COMPAS | shift_age_1.5 | V6 | 17 | 1000 | 1.70% | [0.99%, 2.71%] | pass | 0.405 |
+| COMPAS | shift_age_1.5 | V5 | 12 | 1000 | 1.20% | [0.62%, 2.09%] | pass | 0.405 |
+| German Credit | clean | V6 | 6 | 1000 | 0.60% | [0.22%, 1.30%] | pass | 0.125 |
+| German Credit | clean | V5 | 1 | 1000 | 0.10% | [0.00%, 0.56%] | pass | 0.125 |
+| German Credit | shift_age_1.0 | V6 | 4 | 1000 | 0.40% | [0.11%, 1.02%] | pass | 0.125 |
+| German Credit | shift_age_1.0 | V5 | 0 | 1000 | 0.00% | [0.00%, 0.37%] | pass | 0.125 |
+
 ## 4. Audit-guided mitigation (only in splits where V6 flagged)
 
 Means over flagged splits; fairness measured on clean held-out test labels for the corrupted group. `share_meeting_criteria` = fraction of splits where reweighting lowered the EO gap, lost ≤ 0.02 AUC and kept ESS ≥ 70%.

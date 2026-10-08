@@ -98,9 +98,15 @@ def power():
 def realdata():
     rd = pd.read_csv(os.path.join(RES, "realdata_summary.csv"))
     d = rd[rd["dataset"] == "COMPAS"]
+    v2_path = os.path.join(RES, "realdata_cal_v2_summary.csv")
+    if os.path.exists(v2_path):
+        # panel (a) from the pre-registered 1,000-split calibration study
+        v2 = pd.read_csv(v2_path)
+        v2 = v2[v2["dataset"] == "COMPAS"].assign(endpoint="clean_alarm")
+        d = pd.concat([v2, d[d["endpoint"] != "clean_alarm"]], ignore_index=True)
     label = {"clean": "clean", "shift_age_1.0": "age shift 1.0", "shift_age_1.5": "age shift 1.5",
              "corrupt_10": "10%", "corrupt_20": "20%", "corrupt_30": "30%", "corrupt_30_shift_1.0": "30% + shift"}
-    parts = [("clean_alarm", "(a) clean / shift: alarm rate", 0.05, 0.08),
+    parts = [("clean_alarm", "(a) clean / shift: alarm rate", 0.05, 0.065),
              ("target_recall", "(b) corruption: recall of race", 0.80, 1.0)]
     fig, axes = plt.subplots(1, 2, figsize=(COL_W, 1.55), gridspec_kw={"width_ratios": [1, 1.25]})
     for ax, (endpoint, title, line, xmax) in zip(axes, parts):
@@ -116,6 +122,7 @@ def realdata():
         ax.set_yticks(np.arange(len(conds)), [label[c] for c in conds])
         ax.set_ylim(len(conds) - 0.5, -0.5)
         ax.set_xlim(0, xmax)
+        ax.set_xticks([0, 0.02, 0.04, 0.06] if endpoint == "clean_alarm" else [0, 0.5, 1.0])
         ax.xaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
         ax.set_title(title, pad=2)
         ax.grid(axis="y", visible=False)
