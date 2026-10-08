@@ -27,7 +27,7 @@ button and give it about a minute.
 ```bash
 pip install -r requirements.txt
 streamlit run app.py          # web app at http://localhost:8501
-pytest                        # 35 tests (library + headless app)
+pytest                        # 37 tests (library + headless app)
 ```
 
 Command-line auditing:
@@ -119,7 +119,7 @@ experiments/
   make_report.py           figures + docs/RESULTS.md
 results/                   saved study outputs (per-run records and summaries)
 docs/RESULTS.md            generated results with figures
-tests/                     35 pytest checks (CI numbers from the report, auditors, headless app)
+tests/                     37 pytest checks (CI numbers from the report, auditors, headless app)
 data/                      compas_clean.csv, german_credit.csv, heart_disease.csv
 ```
 
