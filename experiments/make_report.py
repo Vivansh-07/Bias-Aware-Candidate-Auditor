@@ -231,7 +231,10 @@ def main():
         t["McNemar p"] = v2["p_mcnemar"].map(lambda p: f"{p:.3f}")
         out += ["### Pre-registered real-data calibration (v2)", "",
                 f"Protocol `{meta['protocol']}` was committed before the run (code commit "
-                f"`{meta['code_commit'][:8]}`). {meta['splits']:,} fresh splits, {meta['reps']} per condition. "
+                f"`{meta['code_commit'][:8]}`, now "
+                f"`{meta.get('code_commit_after_email_rewrite', meta['code_commit'])[:8]}` after the e-mail "
+                f"rewrite; see `experiments/protocols/history_note.md`). {meta['splits']:,} fresh splits, "
+                f"{meta['reps']} per condition. "
                 f"V6 passes the gate in every condition: **{meta['v6_gate_all_conditions']}**.", "",
                 md_table(t[["dataset", "condition", "method", "alarms", "runs", "rate", "95% CI", "gate", "McNemar p"]]), ""]
     if ms is not None and not ms.empty:

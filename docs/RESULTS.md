@@ -141,7 +141,7 @@ Recall = share of datasets in which the block containing the injected group `a` 
 
 ### Pre-registered real-data calibration (v2)
 
-Protocol `experiments/protocols/realdata_calibration_v2.md` was committed before the run (code commit `4ae16e3d`). 5,000 fresh splits, 1000 per condition. V6 passes the gate in every condition: **True**.
+Protocol `experiments/protocols/realdata_calibration_v2.md` was committed before the run (code commit `4ae16e3d`, now `7965826b` after the e-mail rewrite; see `experiments/protocols/history_note.md`). 5,000 fresh splits, 1000 per condition. V6 passes the gate in every condition: **True**.
 
 | dataset | condition | method | alarms | runs | rate | 95% CI | gate | McNemar p |
 |---|---|---|---|---|---|---|---|---|
