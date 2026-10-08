@@ -510,6 +510,27 @@ def page_calibration():
                          alt.Tooltip("ci_high:Q", title="upper bound", format=".2%")])
             st.altair_chart(ch.properties(height=40 * len(rd["label"].unique()) + 100), use_container_width=True)
             st.dataframe(rd.drop(columns=["label"]), hide_index=True, width="stretch")
+        v2path = os.path.join(RESULTS, "realdata_cal_v2_summary.csv")
+        if os.path.exists(v2path):
+            v2 = pd.read_csv(v2path)
+            v2["label"] = v2["dataset"] + " · " + v2["condition"]
+            meta = json.load(open(os.path.join(RESULTS, "realdata_cal_v2_meta.json")))
+            st.markdown(f"**Pre-registered real-data calibration**: {meta['splits']:,} fresh splits "
+                        f"({meta['reps']:,} per condition). The protocol was committed to git before the run. "
+                        f"V6 passes the < 5% gate in every condition: **{'yes' if meta['v6_gate_all_conditions'] else 'no'}**.")
+            base = alt.Chart(v2).encode(y=alt.Y("label:N", sort=None, title=None), color=METHOD_COLOR,
+                                        yOffset="method:N")
+            pts = base.mark_point(filled=True, size=50).encode(
+                x=alt.X("rate:Q", title="Clean alarm rate (exact 95% CI)", axis=alt.Axis(format="%"),
+                        scale=alt.Scale(domain=[0, 0.06])),
+                tooltip=["dataset", "condition", "method", "alarms", "runs",
+                         alt.Tooltip("ci_high:Q", title="upper bound", format=".2%")])
+            err = base.mark_errorbar(thickness=2).encode(
+                x=alt.X("ci_low:Q", title="Clean alarm rate (exact 95% CI)", scale=alt.Scale(domain=[0, 0.06])),
+                x2="ci_high:Q")
+            rule = alt.Chart(pd.DataFrame({"x": [0.05]})).mark_rule(strokeDash=[4, 4]).encode(x="x:Q")
+            st.altair_chart((err + pts + rule).properties(height=40 * len(v2["label"].unique()) + 100),
+                            use_container_width=True)
         mpath = os.path.join(RESULTS, "mitigation_summary.csv")
         if os.path.exists(mpath):
             ms = pd.read_csv(mpath)

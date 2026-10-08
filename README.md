@@ -23,7 +23,7 @@ columns are sensitive.
 ```bash
 pip install -r requirements.txt
 streamlit run app.py          # web app at http://localhost:8501
-pytest                        # 25 tests
+pytest                        # 31 tests (library + headless app)
 ```
 
 Command-line auditing:
@@ -115,7 +115,7 @@ experiments/
   make_report.py           figures + docs/RESULTS.md
 results/                   saved study outputs (per-run records and summaries)
 docs/RESULTS.md            generated results with figures
-tests/                     25 pytest checks (incl. reproduction of the report's CI numbers)
+tests/                     31 pytest checks (CI numbers from the report, auditors, headless app)
 data/                      compas_clean.csv, german_credit.csv, heart_disease.csv
 ```
 
@@ -158,9 +158,25 @@ On COMPAS with 30% injected corruption (non-recidivist African-American defendan
 as recidivists), V6 recovered `race` in **59.5%** of splits. V5 recovered it in **0.5%**, because
 V5's support rule requires every race group (including the rare merged Asian/Native-American
 group) to have ≥ 10 records per source in each risk stratum, so `race` is always untestable for V5.
-Clean-data alarms on COMPAS were 2.5% for V6 (5/200; upper bound 5.74%, so this 200-split run does
-**not** demonstrate the < 5% gate). German Credit (1,000 rows) is mostly too small: V6 recall is
-4% at 30% corruption and 35.5% at 50%.
+German Credit (1,000 rows) is mostly too small: V6 recall is 4% at 30% corruption and 35.5% at
+50%.
+
+**3b. Pre-registered real-data calibration: 5,000 fresh splits.** The first real-data run
+(200 splits) could not settle the false-alarm gate: COMPAS had 5/200 alarms, upper bound 5.74%.
+So a new fixed-size study was pre-registered: protocol
+[`experiments/protocols/realdata_calibration_v2.md`](experiments/protocols/realdata_calibration_v2.md)
+was committed before the first run. **V6 passed the < 5% gate in all five conditions**:
+
+| condition | V6 alarms | upper bound | V5 alarms |
+|---|---|---|---|
+| COMPAS clean | 2.1% | 3.19% | 0.9% |
+| COMPAS age shift 1.0 | 1.8% | 2.83% | 0.8% |
+| COMPAS age shift 1.5 | 1.7% | 2.71% | 1.2% |
+| German Credit clean | 0.6% | 1.30% | 0.1% |
+| German Credit age shift 1.0 | 0.4% | 1.02% | 0.0% |
+
+V5 alarms less often on clean COMPAS (paired p = 0.012), partly because it cannot test `race`.
+V6's false alarms come mostly from the skewed juvenile-count features (24 of 58 flagged blocks).
 
 **4. Audit-guided mitigation (COMPAS, 30% corruption, splits where V6 flagged).** Reweighting
 cut the logistic model's over-prediction for the corrupted group from **+14.3 pp to +1.6 pp**
@@ -177,7 +193,8 @@ cut the logistic model's over-prediction for the corrupted group from **+14.3 pp
 * The auditor needs a trusted reference sample and observed informative features (the group
   itself or a proxy). It cannot find a group that is completely unobserved.
 * V6 uses a normal approximation and logistic nuisance models. Calibration has to be checked by
-  simulation, as the saved studies do, and is not guaranteed for arbitrary data.
+  simulation, as the saved studies do. On real data it has been checked on two datasets only
+  (COMPAS, German Credit) and is not guaranteed for arbitrary data.
 * Real-data results are semi-synthetic: real features, injected corruption. Detecting real,
   naturally occurring label bias has not been validated.
 
