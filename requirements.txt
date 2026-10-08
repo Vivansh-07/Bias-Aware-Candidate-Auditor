@@ -1,9 +1,10 @@
-numpy>=1.26
-pandas>=2.1
-scipy>=1.11
-scikit-learn>=1.4
-joblib>=1.3
-streamlit>=1.40
-altair>=5.0
-matplotlib>=3.8
-pytest>=8.0
+# Versions the app and studies were run and tested with.
+numpy==2.2.4
+pandas==2.3.2
+scipy==1.16.1
+scikit-learn==1.7.1
+joblib==1.5.2
+streamlit==1.49.0
+altair==5.5.0
+matplotlib==3.10.1
+pytest==9.1.1
