@@ -233,7 +233,7 @@ def page_synthetic():
     st.caption("Generator: legitimate predictors x1–x5, binary group `a` (the corruption target, never labelled "
                "as sensitive), noisy proxy `p`, irrelevant columns z1…zk. Corruption flips positive audit labels "
                "in group a=1 to 0; shift moves the audit mean of x1 without changing the label rule.")
-    preset = st.selectbox("Scenario preset", list(PRESETS), index=0)
+    preset = st.selectbox("Scenario preset", list(PRESETS), index=0, key="syn_preset")
     b = PRESETS[preset]
     k = preset
     with st.expander("Customise scenario", expanded=False):
@@ -257,6 +257,7 @@ def page_synthetic():
     seed = c1.number_input("Seed", 0, 10**6, 11)
     run_v5 = c2.checkbox("Compare with V5", True)
     B = c3.select_slider("V5 permutations B", [199, 499, 999, 1999], 1999)
+    settings = (sc, int(seed), run_v5, B if run_v5 else None)
     if st.button("▶ Run audit", type="primary"):
         with st.spinner("Generating data and auditing…"):
             df = generate(sc, seed=int(seed))
@@ -266,11 +267,16 @@ def page_synthetic():
             r6 = audit_v6(df, feats, config=cfg)
             t6 = time.time() - t
             r5 = audit_v5(df, feats, config=cfg, B=B) if run_v5 else None
-        st.session_state["syn"] = dict(sc=sc, seed=int(seed), df=df, feats=feats, r6=r6, r5=r5, t6=t6)
+        st.session_state["syn"] = dict(settings=settings, sc=sc, seed=int(seed), df=df, feats=feats, r6=r6, r5=r5,
+                                       t6=t6)
+        st.session_state.pop("mit_syn_out", None)
 
     if "syn" not in st.session_state:
         st.stop()
     S = st.session_state["syn"]
+    if S["settings"] != settings:
+        st.info("The settings above changed since the last run. Press **▶ Run audit** to audit them.")
+        st.stop()
     df, feats, r6, r5, sc = S["df"], S["feats"], S["r6"], S["r5"], S["sc"]
     with st.expander("Data preview"):
         st.dataframe(df.drop(columns=["y_clean"]).head(12), width="stretch")
@@ -310,12 +316,13 @@ def page_real():
     st.caption("Semi-synthetic transfer: real features and correlations, record-disjoint trusted / audit / test "
                "splits, and a controlled corruption mechanism so recovery can be scored. You can also upload a "
                "CSV that already has a trusted-vs-audit `source` column.")
-    choice = st.selectbox("Dataset", list(DATASETS) + ["Upload CSV"])
+    choice = st.selectbox("Dataset", list(DATASETS) + ["Upload CSV"], key="real_dataset")
     existing_source = False
     if choice == "Upload CSV":
         up = st.file_uploader("CSV file", type="csv")
         if up is None:
             st.stop()
+        source_id = (up.name, up.size)
         raw = pd.read_csv(up)
         label = st.selectbox("Binary label column", raw.columns)
         if raw[label].nunique() != 2:
@@ -327,6 +334,7 @@ def page_real():
             "Use existing `source` column (0 = trusted, 1 = audit) instead of a semi-synthetic split", True)
         info = None
     else:
+        source_id = choice
         info = DATASETS[choice]
         raw = load_dataset(choice)
         label = info.label
@@ -363,6 +371,8 @@ def page_real():
         if sfeat and strength > 0:
             shift = ShiftSpec(sfeat, strength)
     run_v5 = st.checkbox("Compare with V5", True)
+    settings = (source_id, label, existing_source, int(seed), run_v5, corr, shift,
+                None if existing_source else (test_frac, trusted_frac))
 
     if st.button("▶ Run audit", type="primary"):
         with st.spinner("Splitting and auditing…"):
@@ -377,11 +387,15 @@ def page_real():
             cfg = AuditConfig(seed=int(seed))
             r6 = audit_v6(data, feats, config=cfg)
             r5 = audit_v5(data, feats, config=cfg) if run_v5 else None
-        st.session_state["real"] = dict(data=data, test=test, feats=feats, r6=r6, r5=r5, corr=corr, shift=shift,
-                                        info=info)
+        st.session_state["real"] = dict(settings=settings, data=data, test=test, feats=feats, r6=r6, r5=r5, corr=corr,
+                                        shift=shift, info=info)
+        st.session_state.pop("mit_real_out", None)
     if "real" not in st.session_state:
         st.stop()
     R = st.session_state["real"]
+    if R["settings"] != settings:
+        st.info("The settings above changed since the last run. Press **▶ Run audit** to audit them.")
+        st.stop()
     data, test, feats, r6, r5 = R["data"], R["test"], R["feats"], R["r6"], R["r5"]
     st.write(f"Trusted rows: **{int((data.source == 0).sum())}** · audit rows: **{int((data.source == 1).sum())}**"
              + (f" · clean test rows: **{len(test)}**" if test is not None else ""))
@@ -578,6 +592,12 @@ PAGES = {
     "📊 Calibration": page_calibration,
     "📖 Method & Limits": page_method,
 }
+
+# Streamlit drops the state of widgets that are not drawn, so without this the preset / dataset would reset to
+# the default whenever the user visits another page. Re-assigning the keys keeps them (and the matching results).
+for _key in ("syn_preset", "real_dataset"):
+    if _key in st.session_state:
+        st.session_state[_key] = st.session_state[_key]
 
 with st.sidebar:
     st.markdown("### Candidate Feature Auditor")
