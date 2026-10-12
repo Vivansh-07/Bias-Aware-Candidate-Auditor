@@ -23,6 +23,7 @@ from cfa.v6 import AuditConfig, AuditResult, audit_v6
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 RESULTS = os.path.join(ROOT, "results")
+NEW_APP = "https://hidden-group-bias.streamlit.app"  # the team's current study
 METHOD_COLOR = alt.Color("method:N", scale=alt.Scale(domain=["V6", "V5"], range=["#2a78d6", "#eb6834"]),
                          legend=alt.Legend(orient="bottom", title=None))
 
@@ -191,6 +192,9 @@ def render_mitigation(data, test, feats, res: AuditResult, protected, protected_
 def page_overview():
     st.title("🔎 Candidate Feature Auditor")
     st.markdown("#### Bias-Aware AI Pipelines with Fairness Detection: a working model of the V6 auditor")
+    st.info(f"**The team's current study** measures hidden-group bias with few demographic labels. Try it in the "
+            f"[Hidden-Group Bias Lab]({NEW_APP}). This app remains the working model of the earlier V6 candidate "
+            "feature auditor.", icon="➡️")
     st.markdown(
         "Machine-learning datasets can carry **group-dependent label errors** even when nobody has said "
         "which columns are sensitive. This tool audits a dataset **before any model is trained**: it flags "
@@ -605,5 +609,6 @@ with st.sidebar:
     st.divider()
     st.caption("DSE3170 PBL-3 · Manipal University Jaipur  \nSoumya Shradha · Tanishk Gangwar · "
                "Yagya Salwan · Vivansh Garg  \nGuide: Dr. Chirag Joshi")
+    st.markdown(f"**New:** the team's current study, the [Hidden-Group Bias Lab ↗]({NEW_APP})")
 
 PAGES[page]()
