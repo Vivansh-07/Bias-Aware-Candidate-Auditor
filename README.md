@@ -1,5 +1,7 @@
 # Bias-Aware Candidate Feature Auditor (V6 working model)
 
+[![tests](https://github.com/Vivansh-07/Bias-Aware-Candidate-Auditor/actions/workflows/tests.yml/badge.svg)](https://github.com/Vivansh-07/Bias-Aware-Candidate-Auditor/actions/workflows/tests.yml)
+
 **DSE3170 Project Based Learning-3 · Manipal University Jaipur**
 Project: *Bias-Aware AI Pipelines with Fairness Detection*
 Team: Soumya Shradha · Tanishk Gangwar · Yagya Salwan · Vivansh Garg · Guide: Dr. Chirag Joshi
